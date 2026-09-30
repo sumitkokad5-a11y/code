@@ -1,0 +1,26 @@
+# API Analyzer configuration
+# Generated automatically by API Analyzer.
+# Review this file in the setup pull request before merging.
+
+api_analyzer:
+  adapter: "django-rest-framework"
+  framework: "Django REST Framework"
+  spec_path: "openapi.json"
+  setup_base_commit_sha: "604011766c676acd84ddd75591e756279465a91a"
+  baseline_mode: "merge-base"
+  analyzer_base_url: "https://api-analyzer-backend.onrender.com"
+  analyzer_action: "Sumitkokad/api_analyzer_full/.github/actions/api-compatibility@main"
+  project_id: "repository variable: API_ANALYZER_PROJECT_ID"
+  token_secret: "API_ANALYZER_TOKEN"
+
+  contract_generation:
+    source: "generated"
+    command: "python manage.py spectacular --file openapi.json --validate"
+    language: "Python"
+    package_manager: "pip"
+    install_command: "python -m pip install -r requirements.txt"
+    output_path: "openapi.json"
+    dependency_files:
+      - "requirements.txt"
+    warnings:
+      - "Contract must be generated from exact commit 604011766c676acd84ddd75591e756279465a91a."
