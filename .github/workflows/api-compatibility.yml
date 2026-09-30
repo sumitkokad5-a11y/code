@@ -1,0 +1,77 @@
+# API Analyzer compatibility workflow
+# Generated automatically by API Analyzer.
+#
+# Adapter: django-rest-framework
+# Framework: Django REST Framework
+# Contract: openapi.json
+# Contract source: generated
+
+name: API Compatibility
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  api-compatibility:
+    # The one-time setup PR adds the compatibility configuration itself.
+    # It must never be analyzed against its pre-setup merge-base.
+    if: ${{ !startsWith(github.head_ref, 'api-analyzer/setup/') }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run API Analyzer compatibility check
+        id: api-analyzer
+        uses: Sumitkokad/api_analyzer_full/.github/actions/api-compatibility@main
+        with:
+          api-base-url: "https://api-analyzer-backend.onrender.com"
+          project-id: ${{ vars.API_ANALYZER_PROJECT_ID }}
+          token: ${{ secrets.API_ANALYZER_TOKEN }}
+          spec-path: "openapi.json"
+          generate-command: |
+            python manage.py spectacular --file openapi.json --validate
+          contract-source: "generated"
+          language: "Python"
+          package-manager: "pip"
+          working-directory: ""
+          install-command: "python -m pip install -r requirements.txt"
+          adapter-name: "django-rest-framework"
+          adapter-version: "1.0.0"
+          dependency-files: |
+            requirements.txt
+          environment: ""
+          generator-warnings: |
+            Contract must be generated from exact commit 604011766c676acd84ddd75591e756279465a91a.
+          baseline-mode: merge-base
+          fail-on-error: "true"
+          poll-timeout-seconds: "600"
+          poll-interval-seconds: "5"
+
+      - name: Publish API Analyzer summary
+        if: always()
+        shell: bash
+        env:
+          GATE_STATUS: ${{ steps.api-analyzer.outputs.gate-status }}
+          REASON_CODE: ${{ steps.api-analyzer.outputs.reason-code }}
+          COMPARISON_ID: ${{ steps.api-analyzer.outputs.comparison-id }}
+          REPORT_URL: ${{ steps.api-analyzer.outputs.report-url }}
+        run: |
+          echo "API Analyzer gate: $GATE_STATUS"
+          echo "Reason: $REASON_CODE"
+          echo "Comparison: $COMPARISON_ID"
+
+          if [[ -n "$REPORT_URL" ]]; then
+            echo "Report: $REPORT_URL"
+          fi
