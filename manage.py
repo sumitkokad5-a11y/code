@@ -41,10 +41,10 @@ BASE_SPEC = {
         "schemas": {
             "User": {
                 "type": "object",
-                "required": ["id", "name"],
+                "required": ["id", "full_name"],
                 "properties": {
                     "id": {"type": "integer"},
-                    "name": {"type": "string"},
+                    "full_name": {"type": "string"},
                 },
             }
         }
