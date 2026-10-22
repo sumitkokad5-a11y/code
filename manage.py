@@ -43,7 +43,7 @@ BASE_SPEC = {
                 "type": "object",
                 "required": ["id", "full_name"],
                 "properties": {
-                    "id": {"type": "integer"},
+                    "id1": {"type": "integer"},
                     "full_namenew": {"type": "string"},
                 },
             }
